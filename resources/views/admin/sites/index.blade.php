@@ -27,7 +27,7 @@
                                     <td class="px-6 py-4">{{ $site->url }}</td>
                                     <td class="px-6 py-4">
                                         <a href="{{ route('sites.edit', $site->id) }}">Editar</a>
-                                        {{-- <a href="{{ route('endpoints.index', $site->id) }}">Endpoints</a> --}}
+                                        <a href="{{ route('endpoints.index', $site->id) }}">Endpoints</a>
                                     </td>
                                 </tr>
                             @endforeach
