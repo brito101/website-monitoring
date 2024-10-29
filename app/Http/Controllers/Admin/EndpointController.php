@@ -7,6 +7,7 @@ use App\Http\Requests\StoreUpdateEndpointRequest;
 use App\Models\Endpoint;
 use App\Models\Site;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class EndpointController extends Controller
 {
@@ -14,6 +15,10 @@ class EndpointController extends Controller
     {
         $site = Site::with('endpoints.check')->find($siteId);
         if (!$site) {
+            return back();
+        }
+
+        if (Gate::denies('owner', $site)) {
             return back();
         }
 
@@ -28,11 +33,19 @@ class EndpointController extends Controller
             return back();
         }
 
+        if (Gate::denies('owner', $site)) {
+            return back();
+        }
+
         return view('admin.endpoints.create', compact('site'));
     }
 
     public function store(StoreUpdateEndpointRequest $request, Site $site)
     {
+        if (Gate::denies('owner', $site)) {
+            return back();
+        }
+
         $request['next_check'] = now()->addMinutes((int) $request->frequency);
         $site->endpoints()->create($request->all());
 
@@ -43,12 +56,18 @@ class EndpointController extends Controller
 
     public function edit(Site $site, Endpoint $endpoint)
     {
+        if (Gate::denies('owner', $site)) {
+            return back();
+        }
 
         return view('admin.endpoints.edit', compact('site', 'endpoint'));
     }
 
     public function update(StoreUpdateEndpointRequest $request, Site $site, Endpoint $endpoint)
     {
+        if (Gate::denies('owner', $site)) {
+            return back();
+        }
 
         $endpoint->update($request->validated());
 
@@ -59,6 +78,9 @@ class EndpointController extends Controller
 
     public function destroy(Site $site, Endpoint $endpoint)
     {
+        if (Gate::denies('owner', $site)) {
+            return back();
+        }
 
         $endpoint->delete();
 
